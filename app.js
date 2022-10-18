@@ -2,20 +2,26 @@
 
 const express = require('express'); //importing express module
 
-const app = express();  // using func of express to handling things for us or showing a way
+const bodyParser = require('body-parser');
+const app = express();  // using func of express to handling things for us or showing a way 
 
-app.use((req, res, next)=>{
-    console.log('Into the midlle ware');
-    next();            //reach next middle ware
+app.use(bodyParser.urlencoded()); //registers a middleware and does body parsing for us. and has a next funciton.///plugging into middlewares.
 
-}); //creating midlleware for incoming request a funnel
+app.use('/add-product', (req, res, next)=>{
+    //when user hit on add product url a form is displayed which on submitting redirects to '/product' and post data in it url
+    res.send('<form action="/product" method="POST"><input type="text" name="title"><input type="text" name="size"><button type="submit">Add Products</button></form>'); // Express auto. sets header for us
+   
+});
+//app.post will only filter for post req and wont enter for get req
+app.post('/product', (req,res,next)=>{
+    console.log(req.body);  // (req) it doesnt parse the body so we need a body parser
+    res.redirect('/');      //redirecting '/' to this url
+})
 
-app.use((req, res, next)=>{
-    console.log('Into the 2nd midlle ware');
+app.use('/', (req, res, next)=>{
+    
     res.send('<h1>Hello from Express!</h1>'); // Express auto. sets header for us
     //res.send( { "key1": "value" }) 
-
-
 });
 
 //[2]cmnt const server = http.createServer(app); //
