@@ -19,7 +19,7 @@ const successRoutes = require('./routes/success');
 app.use(bodyParser.urlencoded({ extended:false })); //registers a middleware and does body parsing for us. and has a next funciton.///plugging into middlewares.
 app.use(express.static(path.join(__dirname,'public')));
 
-app.use('/admin',adminRoutes); // filter as oer admin and enter only if there an admin //order matters or use correct protocols not (use)
+app.use('/admin',adminRoutes); // filter as per admin and enter only if there an admin //order matters or use correct protocols not (use)
 
 app.use(shopRoutes);  //order matters
 
