@@ -11,12 +11,12 @@ exports.getProducts = (req, res, next) => {
   });
 };
 
-exports.getProduct = (req,res,next)=>{
+exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
   Product.findById(prodId, product => {
     res.render('shop/product-detail', {
       product: product,
-      pageTitle: product.pagetitle,
+      pageTitle: product.title,
       path: '/products'
     });
   });
@@ -39,18 +39,13 @@ exports.getCart = (req, res, next) => {
   });
 };
 
-exports.postCart = (req,res,next)=>{
-    //in here we have to retireve the prod id from incoming req
-    //fethch the product in  our datbase or file and add to cart
-
-    const prodId = req.body.productId;
-    
-    Product.findById(prodId, (product)=>{
-      Cart.addProduct(prodId, product.price)
-
-    })
-    res.redirect('/cart');
-}
+exports.postCart = (req, res, next) => {
+  const prodId = req.body.productId;
+  Product.findById(prodId, product => {
+    Cart.addProduct(prodId, product.price);
+  });
+  res.redirect('/cart');
+};
 
 exports.getOrders = (req, res, next) => {
   res.render('shop/orders', {
