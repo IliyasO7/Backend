@@ -4,7 +4,7 @@ const express = require('express'); //importing express module
 const bodyParser = require('body-parser');
 
 const errorController = require('./controllers/error');
-const db = require('./util/database'); //pool that allows use to use connection to db
+const sequelize = require('./util/database'); //pool that allows use to use connection to db
 
 const app = express();  // using func of express to handling things for us or showing a way 
 
@@ -14,11 +14,7 @@ app.set('views','views');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
-db.execute('SELECT * FROM products').then(result=>{
-    console.log(result[0], result[1]);
-}).catch(err=>{
-    console.log(err);
-});
+
 
 const contactusRoutes = require('./routes/contactus');
 const successRoutes = require('./routes/success');
@@ -36,5 +32,12 @@ app.use(successRoutes);
 
 app.use(errorController.get404);
 
-app.listen(4000); 
+sequelize.sync().then(result =>{
+    //console.log(result);
+    app.listen(4000); 
+}).catch(err=>{
+    console.log(err);
+});                                                              //creates tables for models
+
+
 
