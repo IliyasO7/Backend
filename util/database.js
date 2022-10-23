@@ -6,5 +6,6 @@ const sequelize = new Sequelize('node-complete','root','Iliyastechs@ngli10', {
     });
 
     //connecting sequelize to db create connection pool
+
    
 module.exports = sequelize;
