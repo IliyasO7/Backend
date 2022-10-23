@@ -20,6 +20,7 @@ app.use(cors());
 //const adminRoutes = require('./routes/admin');
 //const shopRoutes = require('./routes/shop');
 const userRoutes = require('./routes/users');
+const expenseRoutes = require('./routes/expense');
 
 
 //const contactusRoutes = require('./routes/contactus');
@@ -36,6 +37,8 @@ app.use(express.json())//instead of body parson json
 //app.use(shopRoutes);  //order matters
 
 app.use(userRoutes);
+
+app.use(expenseRoutes);
 
 //app.use(contactusRoutes);
 
