@@ -81,6 +81,7 @@ sequelize.sync().then(result =>{
         return User.create({
             name: 'Max',
             email: 'test@test.com'
+            
         });
         return user;
     }

@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
 
+
 //cartts should hold differect carts for different Users.
 const Cart = sequelize.define('cart',{
   id: {
