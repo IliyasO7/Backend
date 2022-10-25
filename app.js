@@ -11,6 +11,8 @@ const sequelize = require('./util/database'); //pool that allows use to use conn
 //importing models
 const Product = require('./models/product');
 const User = require('./models/user');
+const Cart = require('./models/cart');
+const CartItem = require('./models/cart-item');
 
 
 //const cors = require('cors');
@@ -63,7 +65,13 @@ app.use(errorController.get404);
 Product.belongsTo(User, { constraints : true, onDelete: 'CASCADE'})//user ke delete par product bhi delete hona chaiye
 User.hasMany(Product);
 
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product,{ through: CartItem}); //an intermediate connection to store which
+Product.belongsToMany(Cart, { through: CartItem});//product belongs to whcih cart and their respective qntys.
 
+
+//use force for 1st time
 //{force: true} when we want to drop and create a new table
 sequelize.sync().then(result =>{
     //console.log('Server started at 4000');
@@ -78,11 +86,14 @@ sequelize.sync().then(result =>{
     }
 }).then(user=>{
     //console.log(user);
-    app.listen(4000); 
+    return user.createCart();
+     
+}).then(cart=>{
+    app.listen(4000);
 })
 .catch(err=>{
     console.log(err);
-});                                                             //creates tables for models
+});                                                             
 
 
 
