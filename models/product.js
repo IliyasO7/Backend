@@ -1,10 +1,8 @@
-const Sequelize = require('sequelize'); //requiring the package
+const Sequelize = require('sequelize');
 
-const sequelize = require('../util/database'); //connection pool requireed thu sequalize
+const sequelize = require('../util/database');
 
-//defining models that would be managed by sequelize
-
-const Product = sequelize.define('product',{
+const Product = sequelize.define('product', {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -24,7 +22,6 @@ const Product = sequelize.define('product',{
     type: Sequelize.STRING,
     allowNull: false
   }
-
 });
 
 module.exports = Product;
