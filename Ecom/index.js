@@ -57,7 +57,21 @@ parentContainer.addEventListener('click', (e)=>{
         document.querySelector(`#cart`).style = "display:none;"
     }
 
-    //removeitem is not added yet
     //and purchase aswell notificaion
+    
+    if (e.target.className=='purchase-btn'){
+        if (parseInt(document.querySelector('.cart-number').innerText) === 0){
+            alert('You have Nothing in Cart , Add some products to purchase !');
+            return
+        }
+        alert('Congrats your product would be shippped ')
+    }
+
+    if (e.target.innerText=='REMOVE'){
+        let totalCartPrice = document.querySelector('#total-value').innerText;
+        totalCartPrice = parseFloat(totalCartPrice).toFixed(2) - parseFloat(document.querySelector(`#${e.target.parentNode.parentNode.id} .cart-price`).innerText).toFixed(2) ;
+        document.querySelector('#total-value').innerText = `${totalCartPrice.toFixed(2)}`
+        e.target.parentNode.parentNode.remove()
+    }
 })
 
