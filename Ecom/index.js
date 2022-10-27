@@ -75,3 +75,167 @@ parentContainer.addEventListener('click', (e)=>{
     }
 })
 
+
+
+window.addEventListener('load', () => {
+    
+
+    axios.get('http://localhost:4000/products').then((data) => {
+       
+    console.log(data);
+
+    if(data.request.status === 200){
+        const products = data.data.products;
+
+        const parentSection= document.getElementById('Products');
+        
+        products.forEach(product=>{
+            const productHtml = `
+            <div>
+                <h1>${product.title}</h1>
+                <img src="${product.imageUrl}">
+
+                
+                <div class="prod-details">
+                <span>$<span>${product.price}</span></span>
+                <button class="shop-item-button" type='button'>ADD TO CART</button>
+            </div>
+
+
+
+
+
+            </div>
+            `
+
+            parentSection.innerHTML += productHtml;
+        })
+
+    }
+
+
+    
+
+
+
+    
+
+
+    //console.log(products);
+/*
+        const prds = products.data.products;
+        console.log(prds);
+        
+
+        for(let i=0;i<prds.length;i++)
+        {
+            let list = document.getElementById("music-content");
+
+            const createNewHtml = `
+            <div id="album-${prds.id}">
+                <h3>${prds.title}</h3>
+                <div class="image-container">
+                    <img class="prod-images" src=${prds.imageUrl} alt="">
+                </div>
+                                <div class="prod-details">
+                    <span>$<span>${prds.price}</span></span>
+                    <button class="shop-item-button" type='button'>ADD TO CART</button>
+                </div>
+            </div>`
+             list.innerHTML += createNewHtml;
+
+
+        }*/
+   
+    });
+        
+ })
+
+
+ 
+   
+
+
+
+/*
+window.addEventListener('load', () => {
+    console.log('loaded');
+
+    axios.get('http://localhost:4000/products').then((products) => {
+        console.log(products)
+
+        const prds = products.data;
+
+
+        products.data.data.products.forEach(product => {
+            const productHtml = `
+                <div id="album-${product.id}">
+                    <h3>${product.title}</h3>
+                    <div class="image-container">
+                        <img class="prod-images" src=${product.imageUrl} alt="">
+                    </div>
+                                    <div class="prod-details">
+                        <span>$<span>${product.price}</span></span>
+                        <button class="shop-item-button" type='button'>ADD TO CART</button>
+                    </div>
+                </div>`
+            parentNode.innerHTML += productHtml
+
+        })
+    }).catch(err=>{
+        console.log(err);
+    })
+
+})
+
+
+
+/*window.addEventListener('DOMContentLoaded', ()=>{
+   
+   
+   /* axios.get(`http://localhost:4000/products`).then((products)=>{
+        console.log(products);
+        
+       // const products = data.data.products;
+       // console.log(products);
+
+        //const productId = products[0].id;
+        //console.log(productId);
+
+        /* 
+         <div id='album1'>
+                    <h3>Album 1</h3>
+                    <div class="image-container">
+                        <img class="prod-images" src="https://images.unsplash.com/photo-1514533212735-5df27d970db0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1112&q=80" alt="">
+                    </div>
+                                    <div class="prod-details">
+                        <span>$<span>40.99</span></span>
+                        <button class="shop-item-button" type='button'>ADD TO CART</button>
+                    </div>
+                </div>*/
+
+/*
+        products.data.forEach(product => {
+            const createHtml = `
+            <div id="album-${product.id}">
+            <h3>${product.title}</h3>
+            <div class="image-container">
+                <img class="prod-images" src="${product.imageUrl}" alt="">
+            </div>
+                                    <div class="prod-details">
+                        <span>$<span>${product.price}</span></span>
+                        <button class="shop-item-button" type='button'>ADD TO CART</button>
+                    </div>
+            </div>`
+            parentNode.innerHTML += createHtml;
+
+            
+        });*/
+/*
+    }).catch(err=>console.log(err));
+
+    
+
+
+})*/
+

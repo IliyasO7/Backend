@@ -15,11 +15,11 @@ const Cart = require('./models/cart');
 const CartItem = require('./models/cart-item');
 
 
-//const cors = require('cors');
+const cors = require('cors');
 
 const app = express();  // using func of express to handling things for us or showing a way 
 
-//app.use(cors());
+app.use(cors());
 
 app.set('view engine', 'ejs');
 app.set('views','views');
@@ -39,6 +39,8 @@ const successRoutes = require('./routes/success');
 app.use(bodyParser.urlencoded({ extended:false })); //registers a middleware and does body parsing for us. and has a next funciton.///plugging into middlewares.
 app.use(express.static(path.join(__dirname,'public')));
 
+
+/*
 app.use((req,res,next)=>{                           //for incoming req we will run this not for sequelize //sequelize would run only for one time at start to search 1 id. 
     User.findByPk(1).then(user =>{                     //just registers it as middleware doesnt run
         req.user = user;                     //storing user in a req object which is a sequelize object
@@ -46,7 +48,20 @@ app.use((req,res,next)=>{                           //for incoming req we will r
     }).catch(err=>{              
         console.log(err);       
     })                                              
-})                                                  
+})    */
+
+
+app.use((req, res, next) => {
+    User.findByPk(1)
+      .then(user => {
+        req.user = user;
+        next();
+      })
+      .catch(err => console.log(err));
+  });
+  
+
+
 
 app.use('/admin',adminRoutes); // filter as per admin and enter only if there an admin //order matters or use correct protocols not (use)
 app.use(shopRoutes);  //order matters
@@ -61,7 +76,7 @@ app.use(successRoutes);
 
 app.use(errorController.get404);
 
-
+/*
 Product.belongsTo(User, { constraints : true, onDelete: 'CASCADE'})//user ke delete par product bhi delete hona chaiye
 User.hasMany(Product);
 
@@ -69,32 +84,116 @@ User.hasOne(Cart);
 Cart.belongsTo(User);
 Cart.belongsToMany(Product,{ through: CartItem}); //an intermediate connection to store which
 Product.belongsToMany(Cart, { through: CartItem});//product belongs to whcih cart and their respective qntys.
+*/
+
+Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
+
+
+
 
 
 //use force for 1st time
 //{force: true} when we want to drop and create a new table
-sequelize.sync().then(result =>{
-    //console.log('Server started at 4000');
+
+sequelize
+  //.sync({ force: true })
+  .sync()
+  .then(result => {
     return User.findByPk(1);
-}).then(user =>{
-    if(!user){
-        return User.create({
-            name: 'Max',
-            email: 'test@test.com'
-            
-        });
-        return user;
+    // console.log(result);
+  })
+  .then(user => {
+    if (!user) {
+      return User.create({ name: 'Max', email: 'test@test.com' });
     }
-}).then(user=>{
-    //console.log(user);
+    return user;
+  })
+  .then(user => {
+    // console.log(user);
     return user.createCart();
-     
-}).then(cart=>{
+  })
+  .then(cart => {
     app.listen(4000);
-})
-.catch(err=>{
+  })
+  .catch(err => {
     console.log(err);
-});                                                             
+  });                                                            
 
 
 
+/*
+
+const path = require('path');
+
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const errorController = require('./controllers/error');
+const sequelize = require('./util/database');
+const Product = require('./models/product');
+const User = require('./models/user');
+const Cart = require('./models/cart');
+const CartItem = require('./models/cart-item');
+
+const app = express();
+
+app.set('view engine', 'ejs');
+app.set('views', 'views');
+
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use((req, res, next) => {
+  User.findById(1)
+    .then(user => {
+      req.user = user;
+      next();
+    })
+    .catch(err => console.log(err));
+});
+
+app.use('/admin', adminRoutes);
+app.use(shopRoutes);
+
+app.use(errorController.get404);
+
+Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
+
+sequelize
+  // .sync({ force: true })
+  .sync()
+  .then(result => {
+    return User.findById(1);
+    // console.log(result);
+  })
+  .then(user => {
+    if (!user) {
+      return User.create({ name: 'Max', email: 'test@test.com' });
+    }
+    return user;
+  })
+  .then(user => {
+    // console.log(user);
+    return user.createCart();
+  })
+  .then(cart => {
+    app.listen(3000);
+  })
+  .catch(err => {
+    console.log(err);
+  });
+
+  */

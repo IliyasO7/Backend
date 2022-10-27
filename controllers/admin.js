@@ -13,13 +13,14 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  req.user.createProduct({      //auto creates user id in product and associates with it
-    title: title,
-    price: price,
-    imageUrl: imageUrl,
-    description: description,
-     
-  }).then(result => {
+  req.user
+    .createProduct({
+      title: title,
+      price: price,
+      imageUrl: imageUrl,
+      description: description
+    })
+    .then(result => {
       // console.log(result);
       console.log('Created Product');
       res.redirect('/admin/products');
@@ -35,8 +36,9 @@ exports.getEditProduct = (req, res, next) => {
     return res.redirect('/');
   }
   const prodId = req.params.productId;
-  //finding products for currently logged in user
-  req.user.getProducts({where:{id:prodId}})
+  req.user
+    .getProducts({ where: { id: prodId } })
+    // Product.findById(prodId)
     .then(products => {
       const product = products[0];
       if (!product) {
@@ -74,8 +76,8 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  //finding prod for this logged user only
-  req.user.getProducts()
+  req.user
+    .getProducts()
     .then(products => {
       res.render('admin/products', {
         prods: products,
