@@ -34,9 +34,9 @@ const contactusRoutes = require('./routes/contactus');
 const successRoutes = require('./routes/success');
 //const { Server } = require('http');
 
-//app.use(express.json())//instead of body parson json
+app.use(express.json())//instead of body parson json
 
-app.use(bodyParser.urlencoded({ extended:false })); //registers a middleware and does body parsing for us. and has a next funciton.///plugging into middlewares.
+//app.use(bodyParser.urlencoded({ extended:false })); //registers a middleware and does body parsing for us. and has a next funciton.///plugging into middlewares.
 app.use(express.static(path.join(__dirname,'public')));
 
 

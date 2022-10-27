@@ -116,12 +116,7 @@ header .play{
     font-weight:700;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-section h2{
-    font-family:"sans-serif";
-    text-align:center;
-    padding:20px;
-    font-size:30px;
-}
+
 .container{
     max-width:900px;
     margin:0 auto;
@@ -392,7 +387,7 @@ header ul a{
 #cart h2{
     margin:20px 0px;
     padding:0;
-    
+
 }
 
 .cart-btn-bottom{
@@ -456,4 +451,18 @@ header ul a{
 }
 
 
+section {
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: stretch;
+    padding: 1rem;
+    margin: auto;
 
+}
+
+section h2 {
+    font-family: "Metal Mania";
+    text-align: center;
+    padding: 20px;
+    font-size: 30px;
+}

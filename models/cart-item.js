@@ -2,9 +2,7 @@ const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
 
-//cartts should hold differect carts for different Users.
-
-const CartItem = sequelize.define('cartItem',{
+const CartItem = sequelize.define('cartItem', {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -15,5 +13,3 @@ const CartItem = sequelize.define('cartItem',{
 });
 
 module.exports = CartItem;
-
-//cart belongs to  single user but multiple products.
