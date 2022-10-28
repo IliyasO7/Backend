@@ -80,7 +80,52 @@ parentContainer.addEventListener('click', (e)=>{
 */
 
 
+/*
 
+parentContainer.addEventListener('click', (e)=>{
+    if(e.target.className === 'cart-btn-bottom' || e.target.className === 'cart-holder' || e.target.className === 'cart-bottom' )
+    {
+
+        axios.get('http://localhost:4000/cart').then((cartProducts)=>{
+
+        showProductsInCart(cartProducts.data);
+        document.querySelector(`#cart`).style = "display:block;"
+            //console.log(products);    
+
+
+        }).catch(err=>console.log(err));
+            
+
+     }
+   
+    })
+
+    function showProductsInCart(listOfProducts){
+        cartItems.innerHTML = "";
+        listOfProducts.forEach(product=>{
+            const id = `album-${product.id}`;
+            const name = document.querySelector(`#${id} h3`).innerText;
+            const imgSrc = document.querySelector(`#${id} img`).src;
+            const price = product.price;
+            document.querySelector('.cart-number').innerText = parseInt(document.querySelector('.cart-number').innerText)+1;
+            const cart_item = document.createElement('div');
+            cart_item.classList.add('cart-row');
+            cart_item.setAttribute('id',`in-cart-${id}`);
+            cart_item.innerHTML = `
+            <span class='cart-item cart-column'>
+            <img class='cart-img' src="${img_src}" alt="">
+                <span>${name}</span>
+            </span>
+            <span class='cart-price cart-column'>${price}</span>
+            <form onsubmit='deleteCartItem(event, ${product.id})' class='cart-quantity cart-column'>
+                <input type="text" value="1">
+                <button>REMOVE</button>
+            </form>`
+            cartItems.appendChild(cart_item);
+        })
+    }
+
+*/
 
 window.addEventListener('load', () => {
 
@@ -96,33 +141,29 @@ window.addEventListener('load', () => {
 
         products.forEach(product=>{
             const productHtml = `
-            
-                <div>
-                    <article>
-                        <h1>${product.title}</h1>
-                        <img src="${product.imageUrl}">
-                        
-                        <div class="prod-details">
+                <div id="album-${product.id}">
+                    <h3>${product.title}</h3>
+                    <div class="image-container">
+                        <img class="prod-images" src=${product.imageUrl} alt="">
+                    </div>
+                                    <div class="prod-details">
                         <span>$<span>${product.price}</span></span>
-                        <button class="shop-item-button" type='button' onClick="addToCart(${product.id})">ADD TO CART</button>
-                        </div>
-
-                    </article>    
-                </div>
-            
-            `
-
+                        <button class="shop-item-button" type='button'>ADD TO CART</button>
+                    </div>
+                </div>`
             parentSection.innerHTML += productHtml;
         })
 
     }
+
+    
 
 
 });
 
 })
  
-
+/*
 function addToCart(productId){
     axios.post(`http://localhost:4000/cart`,{productId: productId}).then(response=>{
 
@@ -141,7 +182,7 @@ function addToCart(productId){
 
 
 
-}
+}*/
 
 function notifyUser(message){
     const container = document.getElementById('container');
@@ -158,4 +199,87 @@ function notifyUser(message){
 
 
 
+document.addEventListener('click',(e)=>{
+
+    if (e.target.className=='shop-item-button'){
+        const prodId = Number(e.target.parentNode.parentNode.id.split('-')[1]);
+        axios.post('http://localhost:4000/cart', { productId: prodId}).then(data => {
+            if(data.data.error){
+                throw new Error('Unable to add product');
+            }
+            showNotification(data.data.message, false);
+        })
+        .catch(err => {
+            console.log(err);
+            showNotification(err, true);
+        });
+
+    }
+    if (e.target.className=='cart-btn-bottom' || e.target.className=='cart-bottom' || e.target.className=='cart-holder'){
+        axios.get('http://localhost:4000/cart').then(cartProducts => {
+            console.log(cartProducts.data);
+            showProductsInCart(cartProducts.data.products);
+            document.querySelector('#cart').style = "display:block;"
+
+        })
+    }
+
+    if (e.target.className=='cancel'){
+        document.querySelector('#cart').style = "display:none;"
+    }
+
+})
+
+
+function showProductsInCart(listofproducts){
+    cartItems.innerHTML = "";
+   
+   
+   /* listofproducts.forEach(product => {
+        const id = `album-${product.id}`;
+        const name = document.querySelector(`#${id} h3`).innerText;
+        const img_src = document.querySelector(`#${id} img`).src;
+        const price = product.price;
+        document.querySelector('.cart-number').innerText = parseInt(document.querySelector('.cart-number').innerText)+1
+        const cart_item = document.createElement('div');
+        cart_item.classList.add('cart-row');
+        cart_item.setAttribute('id',`in-cart-${id}`);
+        cart_item.innerHTML = `
+        <span class='cart-item cart-column'>
+        <img class='cart-img' src="${img_src}" alt="">
+            <span>${name}</span>
+        </span>
+        <span class='cart-price cart-column'>${price}</span>
+        <form onsubmit='deleteCartItem(event, ${product.id})' class='cart-quantity cart-column'>
+            <input type="text" value="1">
+            <button>REMOVE</button>
+        </form>`
+        cartItems.appendChild(cart_item)
+    })*/
+
+    for(let i=0;i<listofproducts.length;i++){
+        const id = `album-${listofproducts[i].id}`;
+        console.log(id);
+        const name = document.querySelector(`#${id} h3`).innerText;
+        const img_src = document.querySelector(`#${id} img`).src;
+        const price = listofproducts[i].price;
+        document.querySelector('.cart-number').innerText = parseInt(document.querySelector('.cart-number').innerText)+1
+        const cart_item = document.createElement('div');
+        cart_item.classList.add('cart-row');
+        cart_item.setAttribute('id',`in-cart-${id}`);
+        cart_item.innerHTML = `
+        <span class='cart-item cart-column'>
+        <img class='cart-img' src="${img_src}" alt="">
+            <span>${name}</span>
+        </span>
+        <span class='cart-price cart-column'>${price}</span>
+        <form onsubmit='deleteCartItem(event, ${listofproducts[i].id})' class='cart-quantity cart-column'>
+            <input type="text" value="1">
+            <button>REMOVE</button>
+        </form>`
+        cartItems.appendChild(cart_item)
+  
+
+    }
+}
  

@@ -97,6 +97,7 @@ Product.belongsToMany(Cart, { through: CartItem });
 
 
 
+
 //use force for 1st time
 //{force: true} when we want to drop and create a new table
 

@@ -59,11 +59,12 @@ exports.getCart = (req, res, next) => {
       return cart
         .getProducts()
         .then(products => {
-          res.render('shop/cart', {
-            path: '/cart',
-            pageTitle: 'Your Cart',
-            products: products
-          });
+          res.status(200).json({products:products});
+         // res.render('shop/cart', {
+          //  path: '/cart',
+           // pageTitle: 'Your Cart',
+           // products: products
+         // });
         })
         .catch(err => console.log(err));
     })
