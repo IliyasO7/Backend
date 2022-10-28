@@ -207,11 +207,11 @@ document.addEventListener('click',(e)=>{
             if(data.data.error){
                 throw new Error('Unable to add product');
             }
-            showNotification(data.data.message, false);
+            notifyUser(data.data.message, false);
         })
         .catch(err => {
             console.log(err);
-            showNotification(err, true);
+            notifyUser(err, true);
         });
 
     }
@@ -220,14 +220,22 @@ document.addEventListener('click',(e)=>{
             console.log(cartProducts.data);
             showProductsInCart(cartProducts.data.products);
             document.querySelector('#cart').style = "display:block;"
-
+            
         })
     }
+
 
     if (e.target.className=='cancel'){
         document.querySelector('#cart').style = "display:none;"
     }
 
+    if (e.target.className=='purchase-btn'){
+        if (parseInt(document.querySelector('.cart-number').innerText) === 0){
+            alert('You have Nothing in Cart , Add some products to purchase !');
+            return
+        }
+        alert('This Feature is yet to be completed ')
+    }
 })
 
 
@@ -263,6 +271,7 @@ function showProductsInCart(listofproducts){
         const name = document.querySelector(`#${id} h3`).innerText;
         const img_src = document.querySelector(`#${id} img`).src;
         const price = listofproducts[i].price;
+        const qnty = listofproducts[i].cartItem.quantity; 
         document.querySelector('.cart-number').innerText = parseInt(document.querySelector('.cart-number').innerText)+1
         const cart_item = document.createElement('div');
         cart_item.classList.add('cart-row');
@@ -274,12 +283,23 @@ function showProductsInCart(listofproducts){
         </span>
         <span class='cart-price cart-column'>${price}</span>
         <form onsubmit='deleteCartItem(event, ${listofproducts[i].id})' class='cart-quantity cart-column'>
-            <input type="text" value="1">
+            <input type="text" value="${qnty}"> 
             <button>REMOVE</button>
         </form>`
         cartItems.appendChild(cart_item)
   
 
     }
+}
+
+function deleteCartItem(e, prodId){
+    e.preventDefault();
+    axios.post('http://localhost:4000/cart-delete-item', {productId: prodId})
+        .then(() => removeElementFromCartDom(prodId))
+}
+
+function removeElementFromCartDom(prodId){
+    document.getElementById(`in-cart-album-${prodId}`).remove();
+    console.log('Succesfuly removed product');
 }
  
