@@ -40,15 +40,6 @@ app.use(express.json())//instead of body parson json
 app.use(express.static(path.join(__dirname,'public')));
 
 
-/*
-app.use((req,res,next)=>{                           //for incoming req we will run this not for sequelize //sequelize would run only for one time at start to search 1 id. 
-    User.findByPk(1).then(user =>{                     //just registers it as middleware doesnt run
-        req.user = user;                     //storing user in a req object which is a sequelize object
-        next();
-    }).catch(err=>{              
-        console.log(err);       
-    })                                              
-})    */
 
 
 app.use((req, res, next) => {
@@ -76,15 +67,7 @@ app.use(successRoutes);
 
 app.use(errorController.get404);
 
-/*
-Product.belongsTo(User, { constraints : true, onDelete: 'CASCADE'})//user ke delete par product bhi delete hona chaiye
-User.hasMany(Product);
 
-User.hasOne(Cart);
-Cart.belongsTo(User);
-Cart.belongsToMany(Product,{ through: CartItem}); //an intermediate connection to store which
-Product.belongsToMany(Cart, { through: CartItem});//product belongs to whcih cart and their respective qntys.
-*/
 
 Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 User.hasMany(Product);

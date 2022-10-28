@@ -127,15 +127,23 @@ parentContainer.addEventListener('click', (e)=>{
 
 */
 
+const pagination = document.getElementById('pagination');
+
+/*
 window.addEventListener('load', () => {
 
+    const page=1;
+    axios.get(`http://localhost:4000/products/?page=${page}`).then((data) => {
 
-    axios.get('http://localhost:4000/products').then((data) => {
+   // console.log(data);
 
-    console.log(data);
+    
 
     if(data.request.status === 200){
         const products = data.data.products;
+        const pagiData = data.data.data;
+        console.log(pagiData);
+        showPagination(pagiData);
 
         const parentSection= document.getElementById('Products');
 
@@ -156,12 +164,113 @@ window.addEventListener('load', () => {
 
     }
 
+
+
     
 
 
 });
 
+})*/
+
+window.addEventListener('DOMContentLoaded', () => {
+    console.log('loaded');
+
+    let page = 1 ; 
+    axios.get(`http://localhost:4000/products/?page=${page}`).then((res)=>{
+        showProductOnScreen(res.data.products);
+       
+        showPagination(res.data);
+    })
+    //getProducts(page);
+
 })
+/*
+function getProducts(page){
+    axios.get(`http://localhost:4000/products/?page=${page}`).then((data)=>{
+        
+        const products = data.data.products
+        showProductOnScreen(products);
+        const pagiData =data.data.data;
+        showPagination(pagiData);
+
+
+
+    }).catch(err=>console.log(err));
+
+}*/
+
+function getProducts(page){
+    axios.get(`http://localhost:4000/products/?page=${page}`).then(({data:{products, ...pageData}})=>{
+        
+       // const products = data.data.products
+       // showProductOnScreen(res.data.products);
+       //const pagiData =data.data.data;
+      ///  showPagination(res.data);
+        showProductOnScreen(products);
+        showPagination(pageData)
+
+
+    }).catch(err=>console.log(err));
+
+}
+
+
+function showProductOnScreen(products){
+    const parentSection= document.getElementById('Products');
+
+        products.forEach(product=>{
+            const productHtml = `
+                <div id="album-${product.id}">
+                    <h3>${product.title}</h3>
+                    <div class="image-container">
+                        <img class="prod-images" src=${product.imageUrl} alt="">
+                    </div>
+                                    <div class="prod-details">
+                        <span>$<span>${product.price}</span></span>
+                        <button class="shop-item-button" type='button'>ADD TO CART</button>
+                    </div>
+                </div>`
+            parentSection.innerHTML += productHtml;
+        })
+
+}
+
+
+function showPagination({currentPage,hasNextPage,hasPreviousPage,nextPage,previousPage,lastPage}){
+
+    pagination.innerHTML = '';
+
+    if(hasPreviousPage){
+        const button2 = document.createElement('button');
+        button2.classList.add('active');
+        button2.innerHTML = previousPage;
+        button2.addEventListener('click', ()=>getProducts(previousPage));
+        pagination.appendChild(button2);
+
+    }
+
+    const button1 = document.createElement('button');
+    button1.classList.add('active');
+    button1.innerHTML = `<h3>${currentPage}<h3>`;
+    
+    button1.addEventListener('click', ()=>getProducts(currentPage))
+    pagination.appendChild(button1);
+
+    if(hasNextPage){
+        const button3 = document.createElement('button');
+        button3.classList.add('active');
+        button3.innerHTML = nextPage;
+        button3.addEventListener('click',()=>getProducts(nextPage))
+        pagination.appendChild(button3);
+    }
+
+
+}
+
+
+
+
  
 /*
 function addToCart(productId){
@@ -243,27 +352,7 @@ function showProductsInCart(listofproducts){
     cartItems.innerHTML = "";
    
    
-   /* listofproducts.forEach(product => {
-        const id = `album-${product.id}`;
-        const name = document.querySelector(`#${id} h3`).innerText;
-        const img_src = document.querySelector(`#${id} img`).src;
-        const price = product.price;
-        document.querySelector('.cart-number').innerText = parseInt(document.querySelector('.cart-number').innerText)+1
-        const cart_item = document.createElement('div');
-        cart_item.classList.add('cart-row');
-        cart_item.setAttribute('id',`in-cart-${id}`);
-        cart_item.innerHTML = `
-        <span class='cart-item cart-column'>
-        <img class='cart-img' src="${img_src}" alt="">
-            <span>${name}</span>
-        </span>
-        <span class='cart-price cart-column'>${price}</span>
-        <form onsubmit='deleteCartItem(event, ${product.id})' class='cart-quantity cart-column'>
-            <input type="text" value="1">
-            <button>REMOVE</button>
-        </form>`
-        cartItems.appendChild(cart_item)
-    })*/
+   
 
     for(let i=0;i<listofproducts.length;i++){
         const id = `album-${listofproducts[i].id}`;
