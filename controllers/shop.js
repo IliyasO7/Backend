@@ -3,7 +3,7 @@ const Cart = require('../models/cart');
 
 const Order = require('../models/order');
 
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 2;
 
 
 
@@ -231,7 +231,7 @@ exports.getCheckout = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   //console.log("hey");
-  let page = req.query.page ||1;
+  let page = req.query.page||1;
   
   let totalItems;
 
@@ -242,6 +242,8 @@ exports.getProducts = (req, res, next) => {
       limit: ITEMS_PER_PAGE,
     });
   }).then((products) => {
+    console.log(products.length);
+
     res.status(200).json({
       products,success:true,
       data:{

@@ -212,13 +212,20 @@ function getProducts(page){
        // showProductOnScreen(res.data.products);
        
        ///  showPagination(res.data);
+       //console.log(products.data.data);
+       console.log(products.data.data);
+       show(products.data.products);
+       showPagination(products.data.data)
 
-        products.data.products.forEach(product=>{
-            console.log(product);
-            showProductOnScreen(product);
-            
-            showPagination(products.data.data);
-        })
+      //  products.data.products.forEach(product=>{
+         //   console.log(product);
+           // showProductOnScreen(product);
+          //  showPagination(products.data.data);
+            //showPagination(products.data.data);
+       // })
+
+        
+        
 
        
        // showProductOnScreen(products);
@@ -226,6 +233,23 @@ function getProducts(page){
 
 
     }).catch(err=>console.log(err));
+
+}
+
+function show(prod){
+    console.log(prod);
+    
+    parentNode.innerHTML = '';
+    prod.forEach(prod=>{
+        showProductOnScreen(prod);
+    })
+
+  //  prod.forEach(product=>{
+           //console.log(prod);
+    //       showProductOnScreen(prod);
+      //  })
+
+    
 
 }
 
@@ -246,7 +270,7 @@ function showProductOnScreen(product){
                         <button class="shop-item-button" type='button'>ADD TO CART</button>
                     </div>
                 </div>`
-            parentNode.innerHTML = productHtml;
+            parentNode.innerHTML += productHtml;
        
 
 }
@@ -255,6 +279,7 @@ function showProductOnScreen(product){
 function showPagination({currentPage,hasNextPage,hasPreviousPage,nextPage,previousPage,lastPage}){
 
     pagination.innerHTML = '';
+
 
     if(hasPreviousPage){
         const button2 = document.createElement('button');
