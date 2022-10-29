@@ -1,8 +1,9 @@
 
-
+const cart_items = document.querySelector('#cart .cart-items');
 const parentContainer = document.getElementById('EcommerceContainer');
-const cartItems = document.querySelector('#cart .cart-items');
+//const cartItems = document.querySelector('#cart .cart-items');
 //console.log(parentContainer.parentNode);
+const parentNode = document.getElementById('music-content');
 
 /*
 parentContainer.addEventListener('click', (e)=>{
@@ -177,11 +178,14 @@ window.addEventListener('DOMContentLoaded', () => {
     console.log('loaded');
 
     let page = 1 ; 
-    axios.get(`http://localhost:4000/products/?page=${page}`).then((res)=>{
-        showProductOnScreen(res.data.products);
+    getProducts(page);
+
+
+   // axios.get(`http://localhost:4000/products/?page=${page}`).then((res)=>{
+     //   showProductOnScreen(res.data.products);
        
-        showPagination(res.data);
-    })
+       // showPagination(res.data);
+   // })
     //getProducts(page);
 
 })
@@ -201,14 +205,21 @@ function getProducts(page){
 }*/
 
 function getProducts(page){
-    axios.get(`http://localhost:4000/products/?page=${page}`).then(({data:{products, ...pageData}})=>{
+    axios.get(`http://localhost:4000/products/?page=${page}`).then((products)=>{
         
        // const products = data.data.products
        // showProductOnScreen(res.data.products);
        //const pagiData =data.data.data;
       ///  showPagination(res.data);
-        showProductOnScreen(products);
-        showPagination(pageData)
+
+        products.data.products.forEach(product=>{
+            console.log(product);
+            showProductOnScreen(product);
+            showPagination(products.data.data);
+        })
+
+       // showProductOnScreen(products);
+       // showPagination(pageData)
 
 
     }).catch(err=>console.log(err));
@@ -216,10 +227,10 @@ function getProducts(page){
 }
 
 
-function showProductOnScreen(products){
-    const parentSection= document.getElementById('Products');
+function showProductOnScreen(product){
+   // const parentSection= document.getElementById('Products');
 
-        products.forEach(product=>{
+      //  products.forEach(product=>{
             const productHtml = `
                 <div id="album-${product.id}">
                     <h3>${product.title}</h3>
@@ -231,8 +242,8 @@ function showProductOnScreen(products){
                         <button class="shop-item-button" type='button'>ADD TO CART</button>
                     </div>
                 </div>`
-            parentSection.innerHTML += productHtml;
-        })
+            parentNode.innerHTML = productHtml;
+       
 
 }
 
@@ -292,7 +303,7 @@ function addToCart(productId){
 
 
 }*/
-
+/*
 function notifyUser(message){
     const container = document.getElementById('container');
         const notification = document.createElement('div');
@@ -303,11 +314,157 @@ function notifyUser(message){
             notification.remove();
         },2500)
 
+}*/
+
+
+document.addEventListener('click',(e)=>{
+
+    if (e.target.className=='shop-item-button'){
+        const prodId = Number(e.target.parentNode.parentNode.id.split('-')[1]);
+        axios.post('http://localhost:4000/cart', { productId: prodId}).then(data => {
+            if(data.data.error){
+                throw new Error('Unable to add product');
+            }
+            showNotification(data.data.message, false);
+        })
+        .catch(err => {
+            console.log(err);
+            showNotification(err, true);
+        });
+
+    }
+    if (e.target.className=='cart-btn-bottom' || e.target.className=='cart-bottom' || e.target.className=='cart-holder'){
+        axios.get('http://localhost:4000/cart').then(carProducts => {
+            console.log(carProducts.data);
+            showProductsInCart(carProducts.data);
+            document.querySelector('#cart').style = "display:block;"
+
+        }).catch(err=>{
+            console.log(err);
+        })
+    }
+    if (e.target.className=='cancel'){
+        document.querySelector('#cart').style = "display:none;"
+    }
+    if (e.target.className=='purchase-btn'){
+        if (parseInt(document.querySelector('.cart-number').innerText) === 0){
+            alert(' Added products to purchase !');
+            return
+        }
+        alert('This Feature is yet to be completed ')
+    }
+})
+
+
+
+function showProductsInCart(listofproducts){
+ //  console.log(listofproducts.products[0].id);
+ //  const qnty = listofproducts.products[0].cartItem.quantity;
+ //  console.log(qnty);
+    cart_items.innerHTML = "";
+
+    for(let i=0;i<listofproducts.products.length;i++){
+        const id = `album-${listofproducts.products[i].id}`;
+        const name = `${listofproducts.products[i].title} `;
+        const img_src = `${listofproducts.products[i].imageUrl}`;
+        const price = listofproducts.products[i].price;
+        const qnty = listofproducts.products[i].cartItem.quantity;
+
+        const cart_item = document.createElement('div');
+        cart_item.classList.add('cart-row');
+        cart_item.setAttribute('id',`in-cart-${id}`);
+
+        cart_item.innerHTML = `
+            <span class='cart-item cart-column'>
+            <img class='cart-img' src="${img_src}" alt="">
+                <span>${name}</span>
+            </span>
+            <span class='cart-price cart-column'>${price}</span>
+            <form onsubmit='deleteCartItem(event, ${listofproducts.products[i].id})' class='cart-quantity cart-column'>
+                <input type="text" value="${qnty}"> 
+                <button>REMOVE</button>
+            </form>`
+        cart_items.appendChild(cart_item)
+
+    }
 }
 
+function deleteCartItem(e, prodId){
+    e.preventDefault();
+    axios.post('http://localhost:4000/cart-delete-item', {productId: prodId})
+        .then(() => removeElementFromCartDom(prodId))
+}
+
+function showNotification(message, iserror){
+    const container = document.getElementById('container');
+    const notification = document.createElement('div');
+    notification.style.backgroundColor = iserror ? 'red' : 'green';
+    notification.classList.add('notification');
+    notification.innerHTML = `<h4>${message}<h4>`;
+    container.appendChild(notification);
+    setTimeout(()=>{
+        notification.remove();
+    },2500)
+}
+
+function removeElementFromCartDom(prodId){
+        document.getElementById(`in-cart-album-${prodId}`).remove();
+        showNotification('Succesfuly removed product')
+}
+
+/*
+    for(let i=0;i<listofproducts.products.length;i++){
+        const id = `album-${id}`;
+        console.log(id);
+        const name = document.querySelector(`#${listofproducts[i].title} h3`).innerText;
+        console.log(name);
+        const img_src = document.querySelector(`#${id} img`).src;
+        const price = listofproducts[i].price;
+        const qnty = listofproducts[i].cartItem.quantity; 
+        document.querySelector('.cart-number').innerText = parseInt(document.querySelector('.cart-number').innerText)+1
+        const cart_item = document.createElement('div');
+        cart_item.classList.add('cart-row');
+        cart_item.setAttribute('id',`in-cart-${id}`);
+        cart_item.innerHTML = `
+        <span class='cart-item cart-column'>
+        <img class='cart-img' src="${img_src}" alt="">
+            <span>${name}</span>
+        </span>
+        <span class='cart-price cart-column'>${price}</span>
+        <form onsubmit='deleteCartItem(event, ${listofproducts[i].id})' class='cart-quantity cart-column'>
+            <input type="text" value="${qnty}"> 
+            <button>REMOVE</button>
+        </form>`
+        cart_items.appendChild(cart_item)
+  
+
+    }*/
+
+    /*
+    listofproducts.forEach(product => {
+        const id = `album-${product.id}`;
+        const name = product.id;
+        const img_src = product.imageUrl;
+        const price = product.price;
+        document.querySelector('.cart-number').innerText = parseInt(document.querySelector('.cart-number').innerText)+1
+        const cart_item = document.createElement('div');
+        cart_item.classList.add('cart-row');
+        cart_item.setAttribute('id',`in-cart-${id}`);
+        cart_item.innerHTML = `
+        <span class='cart-item cart-column'>
+        <img class='cart-img' src="${img_src}" alt="">
+            <span>${name}</span>
+        </span>
+        <span class='cart-price cart-column'>${price}</span>
+        <form onsubmit='deleteCartItem(event, ${product.id})' class='cart-quantity cart-column'>
+            <input type="text" value="1">
+            <button>REMOVE</button>
+        </form>`
+        cart_items.appendChild(cart_item)
+    })*/
 
 
-
+/*
 document.addEventListener('click',(e)=>{
 
     if (e.target.className=='shop-item-button'){
@@ -345,15 +502,12 @@ document.addEventListener('click',(e)=>{
         }
         alert('This Feature is yet to be completed ')
     }
-})
+})*/
 
-
+/*
 function showProductsInCart(listofproducts){
     cartItems.innerHTML = "";
    
-   
-   
-
     for(let i=0;i<listofproducts.length;i++){
         const id = `album-${listofproducts[i].id}`;
         console.log(id);
@@ -390,5 +544,5 @@ function deleteCartItem(e, prodId){
 function removeElementFromCartDom(prodId){
     document.getElementById(`in-cart-album-${prodId}`).remove();
     console.log('Succesfuly removed product');
-}
+}*/
  

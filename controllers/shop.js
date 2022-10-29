@@ -1,7 +1,7 @@
 const Product = require('../models/product');
 const Cart = require('../models/cart');
 
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = 1;
 
 
 /*
@@ -35,7 +35,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   //console.log("hey");
-  const page = +req.query.page ||1;
+  let page = +req.query.page ||1;
   
   let totalItems;
 
@@ -44,18 +44,18 @@ exports.getProducts = (req, res, next) => {
     return Product.findAll({
       offset: (page - 1) * ITEMS_PER_PAGE,
       limit: ITEMS_PER_PAGE,
-    });
-
+    })
   }).then((products) => {
     res.status(200).json({
-      products:products,
-      currentPage: page,
-      hasNextPage: ITEMS_PER_PAGE *page <totalItems,
-      hasPreviousPage: page > 1,
-      nextPage: +page + 1,
-      previousPage: +page - 1,
-      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
-    })
+      products,
+      data:{
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE *page <totalItems,
+        hasPreviousPage: page > 1,
+        nextPage: +page + 1,
+        previousPage: +page - 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
+      }})
 
     //currentPage,hasNextPage,hasPreviousPage,nextPage,previousPage,lastPage
     //res.render("shop/index", {
@@ -131,15 +131,15 @@ exports.getIndex = (req, res, next) => {
 
 exports.getIndex = (req, res, next) => {
   const page = +req.query.page ||1;
-  const itemsPerPage = 2;
+ // const itemsPerPage = 2;
   let totalItems;
 
   Product.count()
     .then((numProducts) => {
       totalItems = numProducts;
       return Product.findAll({
-        offset: (page - 1) * itemsPerPage ,
-        limit: itemsPerPage
+        offset: (page - 1) * ITEMS_PER_PAGE ,
+        limit: ITEMS_PER_PAGE
       });
     })
     .then((products) => {
@@ -148,11 +148,11 @@ exports.getIndex = (req, res, next) => {
         pageTitle: "Shop",
         path: "/",
         currentPage: page,
-        hasNextPage: totalItems > page * itemsPerPage,
+        hasNextPage: totalItems > page * ITEMS_PER_PAGE,
         hasPreviousPage: page > 1,
         nextPage: +page + 1,
         previousPage: +page - 1,
-        lastPage: Math.ceil(totalItems / itemsPerPage)
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
       });
     })
     .catch((err) => {
