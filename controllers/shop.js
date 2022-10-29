@@ -435,10 +435,13 @@ exports.postOrder=(req,res,next)=>{
 }
 
 exports.getOrders = (req, res, next) => {
-  res.render('shop/orders', {
-    path: '/orders',
-    pageTitle: 'Your Orders'
-  });
+  req.user.getOrders({include : ['products']})
+  .then(orders=>{
+    res.status(200).json(orders)
+  })
+  .catch(err=>{
+    res.status(400).json('unable to fetch orders')
+  })
 };
 
 exports.getCheckout = (req, res, next) => {
