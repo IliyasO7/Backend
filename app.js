@@ -13,30 +13,32 @@ const Product = require('./models/product');
 const User = require('./models/user');
 const Cart = require('./models/cart');
 const CartItem = require('./models/cart-item');
+const Order = require('./models/order');
+const OrderItem = require('./models/order-item');
 
 
-const cors = require('cors');
+//const cors = require('cors');
 
 const app = express();  // using func of express to handling things for us or showing a way 
 
-app.use(cors());
+//app.use(cors());
 
 app.set('view engine', 'ejs');
 app.set('views','views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
-//const userRoutes = require('./routes/users');
+const userRoutes = require('./routes/users');
 //const expenseRoutes = require('./routes/expense');
 
 
-const contactusRoutes = require('./routes/contactus');
-const successRoutes = require('./routes/success');
+//const contactusRoutes = require('./routes/contactus');
+//const successRoutes = require('./routes/success');
 //const { Server } = require('http');
 
-app.use(express.json())//instead of body parson json
+//app.use(express.json())//instead of body parson json
 
-//app.use(bodyParser.urlencoded({ extended:false })); //registers a middleware and does body parsing for us. and has a next funciton.///plugging into middlewares.
+app.use(bodyParser.urlencoded({ extended:false })); //registers a middleware and does body parsing for us. and has a next funciton.///plugging into middlewares.
 app.use(express.static(path.join(__dirname,'public')));
 
 
@@ -57,13 +59,13 @@ app.use((req, res, next) => {
 app.use('/admin',adminRoutes); // filter as per admin and enter only if there an admin //order matters or use correct protocols not (use)
 app.use(shopRoutes);  //order matters
 
-//app.use(userRoutes);
+app.use(userRoutes);
 
 //app.use(expenseRoutes);
 
-app.use(contactusRoutes);
+//app.use(contactusRoutes);
 
-app.use(successRoutes);
+//app.use(successRoutes);
 
 app.use(errorController.get404);
 
@@ -75,6 +77,10 @@ User.hasOne(Cart);
 Cart.belongsTo(User);
 Cart.belongsToMany(Product, { through: CartItem });
 Product.belongsToMany(Cart, { through: CartItem });
+
+Order.belongsTo(User);
+User.hasMany(Order);
+Order.belongsToMany(Product, { through: OrderItem });
 
 
 
