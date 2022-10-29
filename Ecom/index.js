@@ -206,18 +206,21 @@ function getProducts(page){
 
 function getProducts(page){
     axios.get(`http://localhost:4000/products/?page=${page}`).then((products)=>{
+        //console.log(products);
         
        // const products = data.data.products
        // showProductOnScreen(res.data.products);
-       //const pagiData =data.data.data;
-      ///  showPagination(res.data);
+       
+       ///  showPagination(res.data);
 
         products.data.products.forEach(product=>{
             console.log(product);
             showProductOnScreen(product);
+            
             showPagination(products.data.data);
         })
 
+       
        // showProductOnScreen(products);
        // showPagination(pageData)
 
@@ -228,6 +231,7 @@ function getProducts(page){
 
 
 function showProductOnScreen(product){
+   // parentNode.innerHTML = '';
    // const parentSection= document.getElementById('Products');
 
       //  products.forEach(product=>{
@@ -321,10 +325,13 @@ document.addEventListener('click',(e)=>{
 
     if (e.target.className=='shop-item-button'){
         const prodId = Number(e.target.parentNode.parentNode.id.split('-')[1]);
+        //console.log(prodId);
         axios.post('http://localhost:4000/cart', { productId: prodId}).then(data => {
             if(data.data.error){
                 throw new Error('Unable to add product');
             }
+            document.querySelector('.cart-number').innerText = parseInt(document.querySelector('.cart-number').innerText)+1
+
             showNotification(data.data.message, false);
         })
         .catch(err => {
@@ -334,14 +341,10 @@ document.addEventListener('click',(e)=>{
 
     }
     if (e.target.className=='cart-btn-bottom' || e.target.className=='cart-bottom' || e.target.className=='cart-holder'){
-        axios.get('http://localhost:4000/cart').then(carProducts => {
-            console.log(carProducts.data);
-            showProductsInCart(carProducts.data);
-            document.querySelector('#cart').style = "display:block;"
+        
+        getCartItems();
+        document.querySelector('.cart-number').innerText = parseInt(document.querySelector('.cart-number').innerText)-1
 
-        }).catch(err=>{
-            console.log(err);
-        })
     }
     if (e.target.className=='cancel'){
         document.querySelector('#cart').style = "display:none;"
@@ -351,9 +354,27 @@ document.addEventListener('click',(e)=>{
             alert(' Added products to purchase !');
             return
         }
-        alert('This Feature is yet to be completed ')
+        //alert('This Feature is yet to be completed ')
+        axios.post(`http://localhost:4000/create-order`).then(response=>{
+            getCartItems();
+            console.log(response)
+        }).catch(err=>console.log(err))
+        
+        alert('Thank You for Shopping')
+        document.querySelector('.cart-number').innerText = parseInt(document.querySelector('.cart-number').innerText)-1
+
     }
 })
+
+function getCartItems(){
+    axios.get('http://localhost:4000/cart').then(carProducts => {
+            showProductsInCart(carProducts.data);
+            document.querySelector('#cart').style = "display:block;"
+
+        }).catch(err=>{
+            console.log(err);
+        })
+}
 
 
 
@@ -369,6 +390,7 @@ function showProductsInCart(listofproducts){
         const img_src = `${listofproducts.products[i].imageUrl}`;
         const price = listofproducts.products[i].price;
         const qnty = listofproducts.products[i].cartItem.quantity;
+        document.querySelector('.cart-number').innerText = parseInt(document.querySelector('.cart-number').innerText)+1
 
         const cart_item = document.createElement('div');
         cart_item.classList.add('cart-row');
@@ -409,6 +431,8 @@ function showNotification(message, iserror){
 
 function removeElementFromCartDom(prodId){
         document.getElementById(`in-cart-album-${prodId}`).remove();
+        document.querySelector('.cart-number').innerText = parseInt(document.querySelector('.cart-number').innerText)-1
+
         showNotification('Succesfuly removed product')
 }
 

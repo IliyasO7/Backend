@@ -6,20 +6,45 @@ const Order = require('../models/order');
 const ITEMS_PER_PAGE = 1;
 
 
-exports.getProducts = (req, res, next) => {
-  Product.findAll()
-    .then(products => {
-      res.render('shop/product-list', {
-        prods: products,
-        pageTitle: 'All Products',
-        path: '/products'
-      });
-    })
-    .catch(err => {
-      console.log(err);
-    });
-};
 
+
+//Backend data rendering
+
+/*
+
+exports.getProducts = (req, res, next) => {
+  console.log("hey");
+  const page = req.query.page ||1;
+  //const itemsPerPage = 2;
+  let totalItems;
+
+  Product.count().then((cartProducts)=>{
+    totalItems = cartProducts;
+    return Product.findAll({
+      offset: (page - 1) * ITEMS_PER_PAGE,
+      limit: ITEMS_PER_PAGE
+    });
+
+  }).then((products) => {
+    res.render("shop/index", {
+      prods: products,
+      pageTitle: "Shop",
+      path: "/",
+      currentPage: page,
+      hasNextPage: totalItems > page * ITEMS_PER_PAGE,
+      hasPreviousPage: page > 1,
+      nextPage: +page + 1,
+      previousPage: +page - 1,
+      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
+    });
+  }).catch((err) => {
+    console.log(err);
+  });
+
+
+
+
+}
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
   // Product.findAll({ where: { id: prodId } })
@@ -42,16 +67,34 @@ exports.getProduct = (req, res, next) => {
     .catch(err => console.log(err));
 };
 
+
 exports.getIndex = (req, res, next) => {
-  Product.findAll()
-    .then(products => {
-      res.render('shop/index', {
-        prods: products,
-        pageTitle: 'Shop',
-        path: '/'
+  const page = +req.query.page ||1;
+  //const itemsPerPage = 2;
+  let totalItems;
+
+  Product.count()
+    .then((numProducts) => {
+      totalItems = numProducts;
+      return Product.findAll({
+        offset: (page - 1) * ITEMS_PER_PAGE ,
+        limit: ITEMS_PER_PAGE
       });
     })
-    .catch(err => {
+    .then((products) => {
+      res.render("shop/index", {
+        prods: products,
+        pageTitle: "Shop",
+        path: "/",
+        currentPage: page,
+        hasNextPage: totalItems > page * ITEMS_PER_PAGE,
+        hasPreviousPage: page > 1,
+        nextPage: +page + 1,
+        previousPage: +page - 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
+      });
+    })
+    .catch((err) => {
       console.log(err);
     });
 };
@@ -63,11 +106,12 @@ exports.getCart = (req, res, next) => {
       return cart
         .getProducts()
         .then(products => {
-          res.render('shop/cart', {
-            path: '/cart',
-            pageTitle: 'Your Cart',
-            products: products
-          });
+          res.status(200).json({products:products});
+         // res.render('shop/cart', {
+          //  path: '/cart',
+           // pageTitle: 'Your Cart',
+           // products: products
+         // });
         })
         .catch(err => console.log(err));
     })
@@ -103,9 +147,13 @@ exports.postCart = (req, res, next) => {
       });
     })
     .then(() => {
-      res.redirect('/cart');
+      res.status(200).json({success: true, message:'successfully added to cart'})
+
+      //res.redirect('/cart');
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      res.status(500).json({success:false, message:'failed to add to cart'})
+    });
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
@@ -174,16 +222,16 @@ exports.getCheckout = (req, res, next) => {
   });
 };
 
+*/
 
 
+//**************************************************************************************************** 
 
-
-
-/* FROMT ENDS BACK
+/* FROMT ENDS BACK*/
 
 exports.getProducts = (req, res, next) => {
   //console.log("hey");
-  let page = +req.query.page ||1;
+  let page = req.query.page ||1;
   
   let totalItems;
 
@@ -192,7 +240,7 @@ exports.getProducts = (req, res, next) => {
     return Product.findAll({
       offset: (page - 1) * ITEMS_PER_PAGE,
       limit: ITEMS_PER_PAGE,
-    })
+    });
   }).then((products) => {
     res.status(200).json({
       products,success:true,
@@ -250,7 +298,7 @@ exports.getProduct = (req, res, next) => {
 
 
 exports.getIndex = (req, res, next) => {
-  const page = +req.query.page ||1;
+  const page = req.query.page ||1;
  // const itemsPerPage = 2;
   let totalItems;
 
@@ -259,7 +307,7 @@ exports.getIndex = (req, res, next) => {
       totalItems = numProducts;
       return Product.findAll({
         offset: (page - 1) * ITEMS_PER_PAGE ,
-        limit: ITEMS_PER_PAGE
+        limit: ITEMS_PER_PAGE,
       });
     })
     .then((products) => {
@@ -298,7 +346,9 @@ exports.getCart = (req, res, next) => {
            // products: products
          // });
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+          res.status(400).json({error:true, message: "Error getting cart Items"})
+        });
     })
     .catch(err => console.log(err));
 };
@@ -361,6 +411,29 @@ exports.postCartDeleteProduct = (req, res, next) => {
     .catch(err => console.log(err));
 };
 
+
+exports.postOrder=(req,res,next)=>{
+  let fetchedCart;
+  req.user.getCart().then(cart =>{
+    fetchedCart = cart;
+    return cart.getProducts()
+  }).then(products =>{
+    return req.user.createOrder().then(order=>{
+      order.addProducts(products.map(product=>{
+        product.orderItem = {quantity: product.cartItem.quantity}
+        return product
+      }))
+    })
+    .catch(err=>console.log(err))
+  })
+    .then(result=>{
+       fetchedCart.setProducts(null)
+       res.status(200).json({message: 'successfully posted order'})
+  })
+  .catch(err=>console.log(err))
+
+}
+
 exports.getOrders = (req, res, next) => {
   res.render('shop/orders', {
     path: '/orders',
@@ -373,4 +446,4 @@ exports.getCheckout = (req, res, next) => {
     path: '/checkout',
     pageTitle: 'Checkout'
   });
-};*/
+};

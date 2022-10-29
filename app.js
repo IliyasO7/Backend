@@ -17,11 +17,11 @@ const Order = require('./models/order');
 const OrderItem = require('./models/order-item');
 
 
-//const cors = require('cors');
+const cors = require('cors');
 
 const app = express();  // using func of express to handling things for us or showing a way 
 
-//app.use(cors());
+app.use(cors());
 
 app.set('view engine', 'ejs');
 app.set('views','views');
@@ -36,9 +36,9 @@ const userRoutes = require('./routes/users');
 //const successRoutes = require('./routes/success');
 //const { Server } = require('http');
 
-//app.use(express.json())//instead of body parson json
+app.use(express.json())//instead of body parson json
 
-app.use(bodyParser.urlencoded({ extended:false })); //registers a middleware and does body parsing for us. and has a next funciton.///plugging into middlewares.
+//app.use(bodyParser.urlencoded({ extended:false })); //registers a middleware and does body parsing for us. and has a next funciton.///plugging into middlewares.
 app.use(express.static(path.join(__dirname,'public')));
 
 
