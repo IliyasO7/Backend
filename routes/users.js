@@ -1,5 +1,5 @@
 const path = require('path');
-const User = require('../models/user');
+
 
 const userController = require('../controllers/users');
 
@@ -13,6 +13,7 @@ router.get('/user/getUser',userController.getUsers);
 router.post('/user/addUser',userController.postAddUser);
 
 router.delete('/user/deleteUser/:userId',userController.deleteUser);
+
 
 module.exports = router;
 

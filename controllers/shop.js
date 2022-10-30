@@ -225,9 +225,15 @@ exports.getCheckout = (req, res, next) => {
 */
 
 
+
+
 //**************************************************************************************************** 
 
 /* FROMT ENDS BACK*/
+
+
+
+
 
 exports.getProducts = (req, res, next) => {
   //console.log("hey");
