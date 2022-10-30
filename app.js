@@ -50,6 +50,8 @@ app.use(express.static(path.join(__dirname,'public')));
 
 
 
+
+
 app.use((req, res, next) => {
     User.findByPk(1)
       .then(user => {
@@ -66,6 +68,12 @@ app.use('/admin',adminRoutes); // filter as per admin and enter only if there an
 app.use(shopRoutes);  //order matters
 
 app.use(userRoutes);
+
+
+
+app.use((req,res)=>{
+  res.sendFile(path.join(__dirname, `public/${req.url}`));
+})
 
 app.use(errorController.get404);
 
