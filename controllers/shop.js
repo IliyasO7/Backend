@@ -235,6 +235,8 @@ exports.getCheckout = (req, res, next) => {
 
 
 
+
+
 exports.getProducts = (req, res, next) => {
   //console.log("hey");
   let page = req.query.page||1;

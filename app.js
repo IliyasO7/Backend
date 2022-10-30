@@ -10,6 +10,7 @@ dotenv.config();
 
 
 
+
 const bodyParser = require('body-parser');
 const errorController = require('./controllers/error');
 const sequelize = require('./util/database'); //pool that allows use to use connection to db

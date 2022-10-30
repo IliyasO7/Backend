@@ -79,6 +79,8 @@ exports.postEditProduct = (req, res, next) => {
 
 
 
+
+
 exports.getProducts = (req, res, next) => {
   req.user
     .getProducts()

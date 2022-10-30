@@ -19,6 +19,8 @@ exports.getUsers = async (req,res,next)=>{
 
 
 
+
+
 exports.postAddUser = async(req, res, next) => {
   console.log('adding a user');
   try{
